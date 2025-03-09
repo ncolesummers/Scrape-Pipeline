@@ -1,0 +1,75 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build Release Artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+          check-latest: true
+
+      - name: Set up environment variables
+        run: |
+          echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          echo "RELEASE_DIR=release-artifacts" >> $GITHUB_ENV
+
+      - name: Build for all platforms
+        run: |
+          mkdir -p ${{ env.RELEASE_DIR }}
+
+          # Build for Linux
+          GOOS=linux GOARCH=amd64 go build -ldflags="-X 'main.Version=${{ env.RELEASE_VERSION }}'" -o ${{ env.RELEASE_DIR }}/scrape-pipeline-linux-amd64 ./cmd/scrape-pipeline
+
+          # Build for macOS (both Intel and Apple Silicon)
+          GOOS=darwin GOARCH=amd64 go build -ldflags="-X 'main.Version=${{ env.RELEASE_VERSION }}'" -o ${{ env.RELEASE_DIR }}/scrape-pipeline-macos-amd64 ./cmd/scrape-pipeline
+          GOOS=darwin GOARCH=arm64 go build -ldflags="-X 'main.Version=${{ env.RELEASE_VERSION }}'" -o ${{ env.RELEASE_DIR }}/scrape-pipeline-macos-arm64 ./cmd/scrape-pipeline
+
+          # Build for Windows
+          GOOS=windows GOARCH=amd64 go build -ldflags="-X 'main.Version=${{ env.RELEASE_VERSION }}'" -o ${{ env.RELEASE_DIR }}/scrape-pipeline-windows-amd64.exe ./cmd/scrape-pipeline
+
+          # Create archives
+          cd ${{ env.RELEASE_DIR }}
+
+          tar -czf scrape-pipeline-linux-amd64.tar.gz scrape-pipeline-linux-amd64
+          tar -czf scrape-pipeline-macos-amd64.tar.gz scrape-pipeline-macos-amd64
+          tar -czf scrape-pipeline-macos-arm64.tar.gz scrape-pipeline-macos-arm64
+          zip scrape-pipeline-windows-amd64.zip scrape-pipeline-windows-amd64.exe
+
+          # Copy config.yaml.example
+          cp ../config.yaml.example .
+
+          ls -la
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: false
+          prerelease: false
+          name: Release ${{ env.RELEASE_VERSION }}
+          files: |
+            ${{ env.RELEASE_DIR }}/*.tar.gz
+            ${{ env.RELEASE_DIR }}/*.zip
+            ${{ env.RELEASE_DIR }}/config.yaml.example
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-artifacts
+          path: ${{ env.RELEASE_DIR }}
+          retention-days: 5

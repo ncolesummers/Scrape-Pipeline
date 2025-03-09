@@ -132,6 +132,27 @@ To create a default configuration:
 make config
 ```
 
+## Continuous Integration
+
+This project uses GitHub Actions for continuous integration to ensure code quality and functionality. The following CI workflows are set up:
+
+### Main CI Workflow
+
+The main CI workflow (`ci.yml`) runs on every push to `main` and on pull requests. It performs the following steps:
+- Builds the application
+- Runs all tests using `gotestsum`
+- Archives test results as artifacts
+- Runs code linting with `golangci-lint`
+
+### Makefile CI Workflow
+
+The Makefile CI workflow (`makefile-ci.yml`) ensures that the Makefile commands work as expected. It runs:
+- `make build` - Builds the application
+- `make test` - Runs all tests
+- `make lint` - Lints the code
+
+The CI ensures that all changes maintain the quality standards of the project and don't introduce regressions.
+
 ## Development
 
 ### Project Structure
