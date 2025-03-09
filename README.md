@@ -151,6 +151,21 @@ The Makefile CI workflow (`makefile-ci.yml`) ensures that the Makefile commands 
 - `make test` - Runs all tests
 - `make lint` - Lints the code
 
+### Release Workflow
+
+The Release workflow (`release.yml`) automates the creation of release artifacts when a new version tag is pushed:
+- Triggered when a tag matching the pattern `v*` is pushed (e.g., `v1.0.0`)
+- Builds binaries for multiple platforms (Linux, macOS Intel/ARM, Windows)
+- Creates release archives (.tar.gz for Linux/macOS, .zip for Windows)
+- Automatically creates a GitHub Release with the artifacts
+- Includes the configuration example file with the release
+
+To create a release, tag your commit and push the tag:
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
 The CI ensures that all changes maintain the quality standards of the project and don't introduce regressions.
 
 ## Development

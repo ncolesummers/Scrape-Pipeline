@@ -21,7 +21,7 @@ jobs:
           check-latest: true
 
       - name: Go Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cache/go-build
@@ -50,7 +50,7 @@ jobs:
         run: make lint
 
       - name: Archive test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: makefile-test-results

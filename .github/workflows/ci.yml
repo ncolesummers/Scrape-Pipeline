@@ -21,7 +21,7 @@ jobs:
           check-latest: true
 
       - name: Go Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cache/go-build
@@ -46,7 +46,7 @@ jobs:
         run: gotestsum --format pkgname-and-test-fails --format-hide-empty-pkg --junitfile=test-report.xml -- ./...
 
       - name: Archive test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: test-results
@@ -67,7 +67,7 @@ jobs:
           check-latest: true
 
       - name: Go Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cache/go-build
