@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gocolly/colly/v2"
+	colly "github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/extensions"
 
 	"github.com/ncolesummers/scrape-pipeline/internal/models"

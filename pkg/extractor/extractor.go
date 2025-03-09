@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/go-shiori/go-readability"
+	readability "github.com/go-shiori/go-readability"
 
 	"github.com/ncolesummers/scrape-pipeline/internal/models"
 )

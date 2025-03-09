@@ -82,28 +82,6 @@ jobs:
       - name: Verify dependencies
         run: go mod verify
 
-      - name: Print Go environment info
-        run: |
-          echo "==== GOPATH ===="
-          echo $(go env GOPATH)
-          echo "==== GOROOT ===="
-          echo $(go env GOROOT)
-          echo "==== GO111MODULE ===="
-          echo $(go env GO111MODULE)
-          echo "==== GOMOD ===="
-          echo $(go env GOMOD)
-          echo "==== PATH ===="
-          echo $PATH
-          echo "==== MODULE DOWNLOAD STATUS ===="
-          ls -la $(go env GOPATH)/pkg/mod/github.com/gocolly/ || echo "Colly not found"
-          ls -la $(go env GOPATH)/pkg/mod/github.com/go-shiori/ || echo "Go-shiori not found"
-
-      - name: Check Go package sources
-        run: |
-          go list -m all
-          echo "==== SOURCE FILES ===="
-          find . -name "*.go" | grep -E 'pkg/(scraper|extractor)'
-
       - name: Install golangci-lint
         run: go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.57.0
 
@@ -112,7 +90,5 @@ jobs:
 
       - name: Lint
         run: |
-          echo "Running with full PATH: $PATH"
-          which golangci-lint
           golangci-lint --version
-          GOFLAGS="-mod=mod" golangci-lint run --timeout=5m
+          golangci-lint run --timeout=5m
