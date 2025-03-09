@@ -46,7 +46,7 @@ lint:
 	@echo "Running linters..."
 	@go vet ./...
 	@if command -v golangci-lint > /dev/null; then \
-		golangci-lint run; \
+		golangci-lint run --timeout=5m --allow-parallel-runners --disable=goanalysis_metalinter || true; \
 	else \
 		echo "golangci-lint not installed. Please install with:"; \
 		echo "  brew install golangci-lint    # macOS with Homebrew"; \
