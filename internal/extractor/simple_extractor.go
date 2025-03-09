@@ -133,19 +133,44 @@ func (e *SimpleExtractor) extractMetadata(doc *html.Node, content *Content) {
 
 func (e *SimpleExtractor) extractMainContent(doc *html.Node, content *Content) {
 	// In a real implementation, this would be much more sophisticated
-	// For now, we'll just extract the content from the main article tag
+	// For now, we'll extract content from either the main or article tag
 	var sb strings.Builder
-	var extractArticle func(*html.Node)
-	extractArticle = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "article" {
+	var contentFound bool
+
+	var extractContent func(*html.Node)
+	extractContent = func(n *html.Node) {
+		if contentFound {
+			return
+		}
+
+		if n.Type == html.ElementNode && (n.Data == "article" || n.Data == "main") {
 			e.extractNodeText(n, &sb, true)
+			contentFound = true
 			return
 		}
 		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			extractArticle(c)
+			extractContent(c)
 		}
 	}
-	extractArticle(doc)
+
+	extractContent(doc)
+
+	// If no main content found, try looking for just the article tag
+	if !contentFound {
+		var extractArticle func(*html.Node)
+		extractArticle = func(n *html.Node) {
+			if n.Type == html.ElementNode && n.Data == "article" {
+				e.extractNodeText(n, &sb, true)
+				contentFound = true
+				return
+			}
+			for c := n.FirstChild; c != nil; c = c.NextSibling {
+				extractArticle(c)
+			}
+		}
+		extractArticle(doc)
+	}
+
 	content.Content = sb.String()
 }
 
@@ -156,11 +181,43 @@ func (e *SimpleExtractor) extractNodeText(n *html.Node, sb *strings.Builder, isR
 			return
 		}
 
-		// Handle headings
-		if e.config.PreserveHeadings && strings.HasPrefix(n.Data, "h") && len(n.Data) == 2 {
+		// Handle various elements appropriately
+		switch n.Data {
+		case "h1", "h2", "h3", "h4", "h5", "h6":
+			if e.config.PreserveHeadings {
+				sb.WriteString("\n\n")
+				// Process child nodes for headings
+				for c := n.FirstChild; c != nil; c = c.NextSibling {
+					if c.Type == html.TextNode {
+						text := strings.TrimSpace(c.Data)
+						if text != "" {
+							sb.WriteString(text)
+							sb.WriteString(" ")
+						}
+					}
+				}
+				sb.WriteString("\n")
+			}
+			return
+		case "p":
 			if !isRoot {
 				sb.WriteString("\n\n")
 			}
+			// Get the paragraph text
+			for c := n.FirstChild; c != nil; c = c.NextSibling {
+				e.extractNodeText(c, sb, false)
+			}
+			sb.WriteString("\n")
+			return
+		case "br":
+			sb.WriteString("\n")
+			return
+		case "li":
+			sb.WriteString("\n- ")
+			for c := n.FirstChild; c != nil; c = c.NextSibling {
+				e.extractNodeText(c, sb, false)
+			}
+			return
 		}
 	}
 
@@ -176,15 +233,6 @@ func (e *SimpleExtractor) extractNodeText(n *html.Node, sb *strings.Builder, isR
 	// Process child nodes
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
 		e.extractNodeText(c, sb, false)
-	}
-
-	// Add line breaks after certain elements
-	if n.Type == html.ElementNode {
-		if n.Data == "p" || n.Data == "div" || n.Data == "br" ||
-			n.Data == "li" || n.Data == "h1" || n.Data == "h2" ||
-			n.Data == "h3" || n.Data == "h4" || n.Data == "h5" || n.Data == "h6" {
-			sb.WriteString("\n")
-		}
 	}
 }
 

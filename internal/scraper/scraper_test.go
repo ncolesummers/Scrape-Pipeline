@@ -3,6 +3,7 @@ package scraper
 import (
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/ncolesummers/scrape-pipeline/internal/config"
@@ -83,11 +84,11 @@ func TestScrape(t *testing.T) {
 		t.Errorf("Expected URL '%s', got '%s'", server.URL, result.URL)
 	}
 
-	if !contains(result.HTML, "Test Heading") {
+	if !strings.Contains(result.HTML, "Test Heading") {
 		t.Errorf("Expected HTML to contain 'Test Heading'")
 	}
 
-	if !contains(result.HTML, "This is a test paragraph") {
+	if !strings.Contains(result.HTML, "This is a test paragraph") {
 		t.Errorf("Expected HTML to contain 'This is a test paragraph'")
 	}
 }
@@ -142,9 +143,4 @@ Disallow: /private/
 	if disallowed != nil {
 		t.Errorf("Expected nil result for disallowed URL, got content: %s", disallowed.HTML)
 	}
-}
-
-// Helper function to check if a string contains a substring
-func contains(s, substr string) bool {
-	return s != "" && (s == substr || s != "" && s != substr && s[0:len(substr)] == substr)
 }

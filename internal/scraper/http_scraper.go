@@ -109,6 +109,12 @@ func (s *HTTPScraper) Scrape(url string) (*ScrapeResult, error) {
 		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
 
+	// Ensure body is properly converted to string
+	htmlContent := string(body)
+	if htmlContent == "" {
+		return nil, fmt.Errorf("empty response body received from %s", url)
+	}
+
 	// Collect headers
 	headers := make(map[string]string)
 	for name, values := range resp.Header {
@@ -120,7 +126,7 @@ func (s *HTTPScraper) Scrape(url string) (*ScrapeResult, error) {
 	// Create and return the result
 	result := &ScrapeResult{
 		URL:       url,
-		HTML:      string(body),
+		HTML:      htmlContent,
 		Headers:   headers,
 		Status:    resp.StatusCode,
 		FetchedAt: time.Now(),

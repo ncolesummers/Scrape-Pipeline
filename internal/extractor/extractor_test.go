@@ -1,6 +1,7 @@
 package extractor
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/ncolesummers/scrape-pipeline/internal/config"
@@ -103,25 +104,25 @@ func TestExtract(t *testing.T) {
 	}
 
 	// Main content should contain the article text
-	if !contains(content.Content, "Main Article Heading") {
+	if !strings.Contains(content.Content, "Main Article Heading") {
 		t.Errorf("Content should contain 'Main Article Heading'")
 	}
 
-	if !contains(content.Content, "This is the first paragraph") {
+	if !strings.Contains(content.Content, "This is the first paragraph") {
 		t.Errorf("Content should contain the first paragraph")
 	}
 
 	// Headers should be preserved
-	if cfg.PreserveHeadings && !contains(content.Content, "Section Heading") {
+	if cfg.PreserveHeadings && !strings.Contains(content.Content, "Section Heading") {
 		t.Errorf("Content should preserve section headings")
 	}
 
 	// Ensure navigation and footer are removed
-	if contains(content.Content, "Home") || contains(content.Content, "About") {
+	if strings.Contains(content.Content, "Home") || strings.Contains(content.Content, "About") {
 		t.Errorf("Navigation menu should be removed from content")
 	}
 
-	if contains(content.Content, "Copyright 2023") {
+	if strings.Contains(content.Content, "Copyright 2023") {
 		t.Errorf("Footer should be removed from content")
 	}
 
@@ -199,9 +200,4 @@ func TestExtractMetadata(t *testing.T) {
 	if content.Metadata["published_time"] != "2023-05-15T12:00:00Z" {
 		t.Errorf("Expected published_time '2023-05-15T12:00:00Z', got '%s'", content.Metadata["published_time"])
 	}
-}
-
-// Helper function to check if a string contains a substring
-func contains(s, substr string) bool {
-	return s != "" && (s == substr || s != "" && s != substr && s[0:len(substr)] == substr)
 }
