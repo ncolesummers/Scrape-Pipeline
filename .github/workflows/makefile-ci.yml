@@ -30,6 +30,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
+      - name: Get dependencies
+        run: go mod download
+
+      - name: Verify dependencies
+        run: go mod verify
+
       - name: Install gotestsum
         run: go install gotest.tools/gotestsum@latest
 

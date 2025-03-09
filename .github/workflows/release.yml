@@ -31,6 +31,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
+      - name: Get dependencies
+        run: go mod download
+
+      - name: Verify dependencies
+        run: go mod verify
+
       - name: Set up environment variables
         run: |
           echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
