@@ -1,0 +1,72 @@
+linters:
+  enable:
+    - errcheck
+    - goimports
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - typecheck
+    - unused
+    - gosec
+    - gofmt
+    - misspell
+    - prealloc
+    - unconvert
+    - whitespace
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+
+  gofmt:
+    simplify: true
+
+  gosimple:
+    checks: ["all"]
+
+  govet:
+    enable-all: true
+
+  goimports:
+    local-prefixes: "github.com/ncolesummers/scrape-pipeline"
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - gosec
+        - govet
+    - path: _test\.go
+      text: "Error return value of `w.Write` is not checked"
+      linters:
+        - errcheck
+    - path: pkg/scraper/
+      text: "Error return value is not checked|Error return value of"
+      linters:
+        - errcheck
+    - path: internal/config/
+      text: "G306: Expect WriteFile permissions to be"
+      linters:
+        - gosec
+  
+  # Disable specific issues for now (you can fix these later)
+  exclude:
+    - "field .* is unused"
+
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+run:
+  timeout: 5m
+  tests: true
+  build-tags:
+    - integration
+
+# output configuration options
+output:
+  formats:
+    - format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true 

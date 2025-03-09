@@ -1,0 +1,143 @@
+# Web Scraping and RAG System Pipeline Configuration
+
+# Global Configuration
+global:
+  log_level: "info"  # debug, info, warn, error
+  max_concurrency: 10
+  user_agent: "ScrapeRAG/1.0 (+https://github.com/ncolesummers/scrape-pipeline)"
+
+# Web Scraping Module Configuration
+scraper:
+  rate_limit_per_domain: 1  # requests per second
+  respect_robots_txt: true
+  concurrent_requests: 5
+  timeout_seconds: 30
+  retry_count: 3
+  retry_delay_seconds: 5
+  proxy_urls: []  # Add proxy URLs if needed
+  follow_redirects: true
+  max_depth: 2
+
+# Content Extraction Module Configuration
+extractor:
+  extraction_method: "readability"  # readability, custom, site-specific
+  extract_images: false
+  extract_metadata: true
+  site_specific_rules:
+    # Example site-specific rules
+    "example.com":
+      article_selector: "div.article-content"
+      title_selector: "h1.article-title"
+      author_selector: "span.author-name"
+      date_selector: "time.published-date"
+
+# Text Normalization Module Configuration
+normalizer:
+  trim_whitespace: true
+  normalize_unicode: true
+  preserve_lists: true
+  preserve_headings: true
+  remove_scripts: true
+  remove_styles: true
+
+# Document Chunking Module Configuration
+chunker:
+  strategy: "semantic"  # token, semantic, structural
+  target_chunk_size: 500  # tokens
+  chunk_overlap: 50  # tokens
+  respect_headings: true
+  respect_paragraphs: true
+  preserve_metadata: true
+
+# Quality Control Module Configuration
+quality:
+  min_chunk_size: 100  # tokens
+  max_chunk_size: 1000  # tokens
+  enable_duplicate_detection: true
+  duplicate_threshold: 0.85  # similarity threshold for duplicates
+  min_content_quality_score: 0.5  # 0.0 to 1.0
+  language_filter: ["en"]  # Supported languages
+
+# Embedding Service Module Configuration
+embedding:
+  model: "openai"  # openai, sentence-transformers, etc.
+  embedding_dimension: 1536  # Depends on the model
+  batch_size: 32
+  api_key_env_var: "OPENAI_API_KEY"  # Environment variable for API key
+  timeout_seconds: 60
+  models:
+    openai:
+      model_name: "text-embedding-3-small"
+      api_base: "https://api.openai.com/v1"
+    sentence_transformers:
+      model_name: "all-MiniLM-L6-v2"
+
+# Vector Storage Module Configuration
+storage:
+  backend: "chroma"  # chroma, faiss, pinecone, etc.
+  persist_directory: "./data/vector_db"
+  collection_name: "blog_content"
+  backends:
+    chroma:
+      distance_function: "cosine"
+    pinecone:
+      api_key_env_var: "PINECONE_API_KEY"
+      environment: "us-west1-gcp"
+      project_name: "scrape-rag"
+
+# Observability Module Configuration
+observability:
+  metrics_enabled: true
+  tracing_enabled: true
+  logging_enabled: true
+  metrics_port: 9090
+  health_check_port: 8081
+  log_format: "json"  # json, text
+  log_output: "stdout"  # stdout, file
+  log_file_path: "./logs/scrape-pipeline.log"
+  tracing_exporter: "jaeger"  # jaeger, otlp
+  jaeger_endpoint: "http://localhost:14268/api/traces"
+
+# Target Blogs Configuration
+targets:
+  - url: "https://example.com/blog"
+    name: "Example Blog"
+    start_urls:
+      - "https://example.com/blog/page/1"
+    allow_patterns:
+      - "/blog/[0-9]{4}/[0-9]{2}/.*"
+    deny_patterns:
+      - "/blog/tag/.*"
+      - "/blog/category/.*"
+    custom_extraction: false
+
+# Scraper configurations for different blogs
+scrapers:
+  - name: example-tech-blog
+    url: https://example.com/tech
+    rate_limit: 1
+    concurrency: 2
+    user_agent: "Mozilla/5.0 (compatible; Scrape-Pipeline/1.0)"
+    respect_robots_txt: true
+
+  - name: example-news-blog
+    url: https://example.com/news
+    rate_limit: 1
+    concurrency: 1
+    user_agent: "Mozilla/5.0 (compatible; Scrape-Pipeline/1.0)"
+    respect_robots_txt: true
+
+# Content extraction configuration
+extraction:
+  preserve_headings: true
+  extract_images: true
+
+# Document chunking configuration
+chunking:
+  max_tokens: 1000
+  overlap: 200
+
+# The following sections have been removed because they were duplicates:
+# - quality (duplicate of the "Quality Control Module Configuration" section)
+# - embedding (duplicate of the "Embedding Service Module Configuration" section)
+# - storage (duplicate of the "Vector Storage Module Configuration" section) 

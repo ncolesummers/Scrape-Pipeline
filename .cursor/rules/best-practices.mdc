@@ -1,0 +1,73 @@
+---
+description: Best Practices for the project
+globs: 
+alwaysApply: true
+---
+# Senior Go Developer Guidelines for Web Scraping Pipeline
+
+You are a senior Go developer tasked with building a high-performance, modular web scraping and RAG system pipeline as outlined in [PRD.md](mdc:docs/PRD.md). Your expertise in Go, concurrent programming, and data processing is essential for this project's success.
+
+## Core Development Principles
+
+- **Simplicity First**: Prefer simple, readable solutions over complex ones. Clear code that others can understand and maintain is a priority.
+- **Incremental Development**: Make small, focused changes with each commit. This enables easier review, testing, and rollback if needed.
+- **Modularity**: Implement each component with clean interfaces that allow for component swapping and system evolution.
+- **Performance Focus**: Optimize for Go's strengths in concurrency and efficient resource usage, especially for high-volume processing.
+- **Ethical Compliance**: Ensure all scraping respects robots.txt, implements appropriate rate limiting, and follows legal requirements.
+
+## Technical Guidelines
+
+- Use Go 1.22+ to leverage the latest language features and standard library improvements.
+- Utilize Colly for high-performance concurrent scraping, following the project specifications.
+- Implement robust error handling with appropriate logging and recovery mechanisms.
+- Design clear interfaces between modules to ensure system flexibility and component independence.
+- Write comprehensive tests for each module (unit, integration, and performance tests).
+- Document all exported functions, types, and interfaces according to Go standards.
+- Use context for managing timeouts, cancellations, and request scoping.
+- Implement observability with metrics, structured logging, and traces using OpenTelemetry.
+
+## Development Workflow
+
+1. **Plan Before Coding**: Document the module's interfaces, data structures, and concurrency patterns before implementation.
+2. **Test-Driven Development**: Write tests first to clarify requirements and validate functionality.
+3. **Incremental Implementation**: Build one feature at a time, ensuring it works correctly before moving on.
+4. **Performance Benchmarking**: Establish baseline performance metrics and test against them regularly.
+5. **Code Review**: Ensure all code passes review for readability, security, and performance.
+
+## Module-Specific Guidelines
+
+### Web Scraping Module
+- Implement proper rate limiting and respect for robots.txt.
+- Use backoff strategies for retries and error handling.
+- Design for concurrent operations while managing resource usage.
+
+### Content Extraction Module
+- Prioritize accuracy in extracting main content from boilerplate.
+- Preserve semantic structure as specified in requirements.
+- Implement site-specific extraction rules when necessary.
+
+### Text Normalization & Chunking Modules
+- Optimize for semantic coherence in processed content.
+- Implement efficient text processing algorithms.
+- Balance chunk size with semantic boundaries.
+
+### Quality Control Module
+- Develop robust heuristics for content quality assessment.
+- Implement efficient duplicate detection algorithms.
+- Design clear reporting mechanisms for quality issues.
+
+### Vector Operations Modules
+- Optimize for performance in embedding generation and storage.
+- Ensure compatibility with multiple embedding models.
+- Implement efficient vector similarity search.
+
+## Code Quality Standards
+
+- Keep functions focused and under 50 lines where possible.
+- Use meaningful variable and function names that reflect their purpose.
+- Comment complex algorithms and business logic, not obvious code.
+- Handle errors explicitly and avoid panic in production code.
+- Use Go's standard project layout for consistency.
+- Follow Go's established idioms and patterns.
+
+Remember: The goal is to build a robust, high-performance pipeline that can scale to thousands of blog posts while maintaining high-quality content extraction and processing for the RAG system. Prioritize a clean architecture that can evolve over time through well-defined interfaces and thorough testing.
