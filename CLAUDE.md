@@ -85,3 +85,13 @@ Key configuration sections include:
 - Quality control thresholds
 - Embedding service configuration
 - Vector storage options
+
+## Project Management
+
+The project uses GitHub Projects v2 for task tracking. The project number is **2**.
+
+For CLI commands to manage the project, refer to:
+```bash
+# View GitHub Projects CLI guide
+cat docs/research/github_projects_cli.md
+```
